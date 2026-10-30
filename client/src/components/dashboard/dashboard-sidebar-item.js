@@ -1,0 +1,92 @@
+import { useState } from "react";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { Box, Button, ListItem } from "@mui/material";
+
+export const DashboardSidebarItem = (props) => {
+  const router = useRouter();
+  const {
+    active,
+    chip,
+    depth,
+    icon,
+    info,
+    open: openProp,
+    path,
+    title,
+    ...other
+  } = props;
+  const [open, setOpen] = useState(openProp);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  let paddingLeft = 24;
+
+  if (depth > 0) {
+    paddingLeft = 32 + 8 * depth;
+  }
+
+  // Leaf
+  return (
+    <ListItem
+      disableGutters
+      sx={{
+        display: "flex",
+        mb: 0.5,
+        py: 0,
+        px: 2,
+      }}
+    >
+      <Button
+        onClick={() => {
+          router.push(`/?address=${path.replace("/", "")}`, undefined, {
+            shallow: true,
+          });
+        }}
+        component="a"
+        startIcon={icon}
+        endIcon={chip}
+        disableRipple
+        sx={{
+          wordBreak: "break-all",
+          backgroundColor: active && "rgba(255,255,255, 0.08)",
+          borderRadius: 1,
+          color: active ? "secondary.main" : "neutral.300",
+          fontWeight: active && "fontWeightBold",
+          justifyContent: "flex-start",
+          pl: `${paddingLeft}px`,
+          pr: 3,
+          textAlign: "left",
+          textTransform: "none",
+          width: "100%",
+          "& .MuiButton-startIcon": {
+            color: active ? "secondary.main" : "neutral.400",
+          },
+          "&:hover": {
+            backgroundColor: "rgba(255,255,255, 0.08)",
+          },
+        }}
+      >
+        <Box sx={{ flexGrow: 1 }}>{title}</Box>
+        {info}
+      </Button>
+    </ListItem>
+  );
+};
+
+DashboardSidebarItem.propTypes = {
+  active: PropTypes.bool,
+  depth: PropTypes.number.isRequired,
+  icon: PropTypes.node,
+  info: PropTypes.node,
+  open: PropTypes.bool,
+  path: PropTypes.string,
+  title: PropTypes.string.isRequired,
+};
+
+DashboardSidebarItem.defaultProps = {
+  active: false,
+  open: false,
+};
